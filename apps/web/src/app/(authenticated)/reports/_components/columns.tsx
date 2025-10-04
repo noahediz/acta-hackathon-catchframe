@@ -1,61 +1,160 @@
 "use client"
+
+import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
+import { Ellipsis } from "lucide-react"
+import { Report } from "@/types/report"
+import { Badge } from "@/components/ui/badge"
+import { redirect } from "next/navigation"
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type Payment = {
-  id: string
-  amount: number
-  status: "pending" | "processing" | "success" | "failed"
-  email: string
-}
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<Report>[] = [
+  {
+    accessorKey: "timestamp",
+    header: "Time",
+    cell: ({ row }) => {
+      const timestamp = row.original.timestamp
+      console.log("timestamp", timestamp)
+      const date = new Date(timestamp._seconds * 1000).toLocaleString()
+      console.log("date", date)
+      return date
+    },
+  },
   {
     accessorKey: "status",
     header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string
+
+      const statusConfig = {
+        pending: { label: "Pending", className: "bg-blue-500 hover:bg-blue-600" },
+        processing: { label: "Processing", className: "bg-yellow-500 hover:bg-yellow-600" },
+        completed: { label: "Completed", className: "bg-green-500 hover:bg-green-600" },
+        fixed: { label: "Fixed", className: "bg-green-500 hover:bg-green-600" },
+      }
+
+      const config = statusConfig[status as keyof typeof statusConfig] || { label: status, className: "" }
+
+      return (
+        <Badge className={config.className}>
+          {config.label}
+        </Badge>
+      )
+    },
+  },
+  {
+    accessorKey: "description",
+    header: "Description",
+    cell: ({ row }) => {
+      const description = row.getValue("description") as string
+      return (
+        <div className="max-w-[300px] truncate">
+          {description}
+        </div>
+      )
+    },
   },
   {
     accessorKey: "email",
     header: "Email",
-  },
-  {
-    accessorKey: "amount",
-    header: "Amount",
+    cell: ({ row }) => {
+      const email = row.getValue("email") as string | undefined
+      return <div>{email || "Not provided"}</div>
+    },
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const payment = row.original
- 
+      const report = row.original
+
+      const handleStatusChange = async (newStatus: "pending" | "processing" | "completed" | "fixed") => {
+        try {
+          const response = await fetch(`/api/reports/${report.id}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status: newStatus }),
+          })
+
+          if (!response.ok) {
+            throw new Error('Failed to update status')
+          }
+
+          window.location.reload()
+        } catch (error) {
+          console.error('Error updating status:', error)
+        }
+      }
+
+      const handleDelete = async () => {
+        if (!confirm('Are you sure you want to delete this report?')) {
+          return
+        }
+
+        try {
+          const response = await fetch(`/api/reports/${report.id}`, {
+            method: 'DELETE',
+          })
+
+          if (!response.ok) {
+            throw new Error('Failed to delete report')
+          }
+
+          window.location.reload()
+        } catch (error) {
+          console.error('Error deleting report:', error)
+        }
+      }
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
+              <Ellipsis className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => {
+                redirect(`/reports/${report.id}`)
+              }}
             >
-              Copy payment ID
+              Open details
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Change status</DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem onClick={() => handleStatusChange('pending')}>
+                  Pending
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleStatusChange('processing')}>
+                  Processing
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleStatusChange('completed')}>
+                  Completed
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleStatusChange('fixed')}>
+                  Fixed
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleDelete} className="text-red-600">
+              Delete report
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
