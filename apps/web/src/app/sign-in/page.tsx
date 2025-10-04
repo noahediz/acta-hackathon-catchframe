@@ -1,20 +1,17 @@
 'use client';
+import { ThemedLogo } from "@/components/themed-logo";
 import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
-import Image from "next/image";
 
 export default function SignInPage() {
   const handleSignIn = () => signIn('github');
 
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-primary-foreground p-6">
+    <div className="flex min-h-screen items-center light:bg-muted justify-center p-6">
       <div className="w-full max-w-sm rounded-xl bg-white dark:bg-black border p-6 space-y-6">
-        <Image
-          src="/logo.png"
-          width={160}
-          height={100}
-          alt="Logo"
-        />
+        <ThemedLogo width={160} height={100} />
+        
         <h1 className="text-xl font-semibold">
           Sign in
         </h1>
@@ -32,10 +29,11 @@ export default function SignInPage() {
           >
             Sign in with GitHub
           </Button>
-          <p className="text-xs text-muted-foreground text-center">For Acta Team: Authenticate with your GitHub Account</p>
+          <p className="text-xs text-muted-foreground text-center">
+            For Acta Team: Authenticate with your GitHub Account
+          </p>
         </div>        
       </div>
     </div>
   );
 }
-
