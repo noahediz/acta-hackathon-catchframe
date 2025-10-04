@@ -1,4 +1,4 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { cookies } from "next/headers";
 
@@ -13,7 +13,7 @@ export default async function Layout({
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
-      <main className="p-4">
+      <main className="p-6 w-full flex flex-col gap-4">
         {/**<SidebarTrigger /> */}
         {children}
       </main>
