@@ -1,0 +1,1 @@
+The Next.js application (dashboard UI)
