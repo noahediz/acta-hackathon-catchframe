@@ -24,12 +24,12 @@ type PubSubMessage struct {
 }
 
 var (
-	firestoreClient *firestore.Client
-	storageClient   *storage.Client
-
-	gcpProjectID         = os.Getenv("GOOGLE_CLOUD_PROJECT")
-	reportsCollection    = "reports"
-	rawUploadsBucketName = "catchframe-raw-uploads"
+	firestoreClient        *firestore.Client
+	storageClient          *storage.Client
+	gcpProjectID           = os.Getenv("GOOGLE_CLOUD_PROJECT")
+	reportsCollection      = "reports"
+	rawUploadsBucketName   = "catchframe-raw-uploads"
+	processedReportsBucket = "catchframe-processed-reports"
 )
 
 func init() {
@@ -59,8 +59,33 @@ func ProcessingService(ctx context.Context, e cloudevents.Event) error {
 
 	rawVideoFileName := reportID + ".webm"
 
-	// The public URL is now the source of truth because the bucket itself is public.
-	processedVideoURL := fmt.Sprintf("https://storage.googleapis.com/%s/%s", rawUploadsBucketName, rawVideoFileName)
+	// Define source and destination objects in GCS.
+	sourceObject := storageClient.Bucket(rawUploadsBucketName).Object(rawVideoFileName)
+	destObject := storageClient.Bucket(processedReportsBucket).Object(rawVideoFileName)
+
+	// Copy the object from the raw bucket to the processed bucket.
+	copier := destObject.CopierFrom(sourceObject)
+	if _, err := copier.Run(ctx); err != nil {
+		return fmt.Errorf("failed to copy object: %w", err)
+	}
+	log.Printf("Successfully copied %s to bucket %s", rawVideoFileName, processedReportsBucket)
+
+	// Make the new object in the processed bucket public.
+	acl := destObject.ACL()
+	if err := acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
+		return fmt.Errorf("failed to set public ACL on new object: %w", err)
+	}
+
+	// Delete the original object from the raw bucket.
+	if err := sourceObject.Delete(ctx); err != nil {
+		// Log the error but don't fail the function, as the copy succeeded.
+		log.Printf("Warning: failed to delete source object %s: %v", rawVideoFileName, err)
+	} else {
+		log.Printf("Successfully deleted source object %s", rawVideoFileName)
+	}
+
+	// The public URL now points to the new object in the processed bucket.
+	processedVideoURL := fmt.Sprintf("https://storage.googleapis.com/%s/%s", processedReportsBucket, rawVideoFileName)
 
 	// Update the Firestore document with the final status and the direct video URL.
 	_, err := firestoreClient.Collection(reportsCollection).Doc(reportID).Update(ctx, []firestore.Update{
