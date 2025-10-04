@@ -19,7 +19,7 @@ export default function SignInPage() {
           This is the central inbox for all visual bug reports from your web application.
           <br />
           <br />
-          Stop deciphering vague user tickets and start fixing issues faster with screen recordings, console logs, and network data bundled into one clear report. Sign in to view your team's latest reports.
+          Stop deciphering vague user tickets and start fixing issues faster with screen recordings, console logs, and network data bundled into one clear report. Sign in to view your team&lsquo;s latest reports.
         </p>
         <div className="space-y-2">
           <Button
