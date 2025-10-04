@@ -1,4 +1,4 @@
-package main
+package ingestion
 
 import (
 	"context"
@@ -12,6 +12,7 @@ import (
 	"cloud.google.com/go/firestore"
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/storage"
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/google/uuid"
 )
 
@@ -30,6 +31,8 @@ var (
 
 // Rruns once on service startup to initialize Google Cloud clients
 func init() {
+	functions.HTTP("IngestionService", ingestionHandler)
+
 	ctx := context.Background()
 	var err error
 
@@ -60,22 +63,7 @@ type Report struct {
 	Metadata    string    `firestore:"metadata"`
 }
 
-func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
-	http.HandleFunc("/", handler)
-
-	log.Println("Starting server on port", port)
-
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
+func ingestionHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check if the request method is POST
 	if r.Method != http.MethodPost {
