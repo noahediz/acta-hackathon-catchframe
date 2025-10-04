@@ -83,7 +83,7 @@ func ProcessingService(ctx context.Context, e cloudevents.Event) error {
 
 	// Update the Firestore document with the final status and the direct video URL.
 	_, err := firestoreClient.Collection(reportsCollection).Doc(reportID).Update(ctx, []firestore.Update{
-		{Path: "status", Value: "completed"},
+		{Path: "status", Value: "new"},
 		{Path: "processedVideoUrl", Value: processedVideoURL},
 	})
 	if err != nil {

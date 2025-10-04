@@ -123,7 +123,7 @@ func ingestionHandler(w http.ResponseWriter, r *http.Request) {
 	// Create firestore document
 	newReport := Report{
 		ID:          reportID,
-		Status:      "processing",
+		Status:      "pending",
 		Timestamp:   time.Now(),
 		Description: description,
 		ConsoleLogs: consoleLogsJSON,
