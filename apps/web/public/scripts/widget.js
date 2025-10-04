@@ -227,8 +227,8 @@
             }
 
             .bug-widget-record-button {
-                background-color: var(--bug-widget-destructive);
-                color: var(--bug-widget-destructive-foreground);
+                background-color: var(--bug-widget-primary);
+                color: var(--bug-widget-primary-foreground);
                 display: flex;
                 align-items: center;
                 justify-content: center;
