@@ -1,12 +1,12 @@
 {
-  "name": "acta-hackathon-starter",
+  "name": "acta-hackathon-catchframe",
   "version": "1.0.0",
   "description": "ACTA 24-hour Global Hackathon starter repository",
   "main": "index.js",
   "scripts": {
     "verify": "node verify-submission.js",
-    "start": "echo 'Add your start command here!'",
-    "test": "echo 'Add your test command here!'"
+    "start": "cd apps/web && pnpm run dev",
+    "test": "cd apps/web && pnpm run dev"
   },
   "keywords": [
     "hackathon",
@@ -17,7 +17,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/actastudios/global-hackathon-v1"
+    "url": "https://github.com/noahediz/acta-hackathon-catchframe"
   }
 }
-

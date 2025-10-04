@@ -37,10 +37,10 @@ export const columns: ColumnDef<Report>[] = [
       const status = row.getValue("status") as string
 
       const statusConfig = {
-        pending: { label: "Pending", className: "bg-blue-500 hover:bg-blue-600" },
-        processing: { label: "Processing", className: "bg-yellow-500 hover:bg-yellow-600" },
-        completed: { label: "Completed", className: "bg-green-500 hover:bg-green-600" },
-        fixed: { label: "Fixed", className: "bg-green-500 hover:bg-green-600" },
+        pending: { label: "New", className: "bg-neutral-500/20 hover:bg-neutral-300/20 text-neutral-600" },
+        new: { label: "New", className: "bg-blue-200/20 hover:bg-blue-300/20 text-blue-600" },
+        processing: { label: "Processing", className: "bg-yellow-300/40 dark:bg-yellow-300/20 hover:bg-yellow-500/40 text-yellow-600" },
+        completed: { label: "Completed", className: "bg-green-500/20 hover:bg-green-300/20 text-green-600" }
       }
 
       const config = statusConfig[status as keyof typeof statusConfig] || { label: status, className: "" }
@@ -77,7 +77,7 @@ export const columns: ColumnDef<Report>[] = [
     cell: ({ row }) => {
       const report = row.original
 
-      const handleStatusChange = async (newStatus: "pending" | "processing" | "completed" | "fixed") => {
+      const handleStatusChange = async (newStatus: "pending" | "processing" | "completed" | "new") => {
         try {
           const response = await fetch(`/api/reports/${report.id}`, {
             method: 'PATCH',
@@ -140,15 +140,15 @@ export const columns: ColumnDef<Report>[] = [
                 <DropdownMenuItem onClick={() => handleStatusChange('pending')}>
                   Pending
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleStatusChange('new')}>
+                  New
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleStatusChange('processing')}>
                   Processing
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleStatusChange('completed')}>
                   Completed
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleStatusChange('fixed')}>
-                  Fixed
-                </DropdownMenuItem>
+                </DropdownMenuItem>                
               </DropdownMenuSubContent>
             </DropdownMenuSub>
             <DropdownMenuSeparator />
