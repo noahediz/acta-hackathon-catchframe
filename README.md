@@ -1,119 +1,84 @@
-# 🚀 ACTA Global Hackathon
+# CatchFrame
 
-**24 hours to build something impressive.**
+**Stop guessing what's wrong. Start fixing it.**
 
-## ⏰ Timeline
-
-- **Start**: Oct 4, 2025 at 12:00 CET
-- **End**: Oct 5, 2025 at 12:00 CET
-- **Duration**: 24 hours
-
-## 🏆 Prizes
-
-1. **1st**: One week in Cape Town (flights + hotel)
-2. **2nd**: €300 + fast-tracked interview
-3. **3rd**: Raspberry Pi + fast-tracked interview
-
-## 💡 What to Build
-
-**Option 1: Build anything you wish existed** (open format - truly anything!)
-
-**Option 2: Choose one of these problem statements:**
-
-### 1. Memory Keeper for Grandparents
-Interactive AI conversations that capture grandparents' life memories and turn them into blog posts for family members. Think Duolingo but for preserving family stories and wisdom.
-
-### 2. Graph-Based Learning System
-Transform linear course content (like [MIT's Statistics course](https://ocw.mit.edu/courses/18-05-introduction-to-probability-and-statistics-spring-2022/)) into an interactive graph-based learning experience. Organize concepts as nodes/connections to match how the brain actually learns - accelerating comprehension through visualization and non-linear exploration.
-
-### 3. Agent Orchestration Layer
-Build the n8n for AI agents - an orchestration platform for vertical agents to create AI-native companies. Solve context engineering and enable swarm intelligence across agent networks.
-
-**Note**: These are extensive problems - MVPs are perfectly fine and expected!
-
-## 🎯 Rules
-
-- Solo or duo teams
-- Greenfield projects only
-- Any tech stack
-- Must be buildable in 24 hours
-- Read [RULES.md](./RULES.md) for anti-cheating requirements
-
-## 🚀 Quick Start
-
-```bash
-# 1. Clone this repo
-git clone <your-fork-url>
-cd global-hackathon-v1
-
-# 2. Create timestamp (REQUIRED for anti-cheating)
-date > .hackathon-start
-git add .hackathon-start
-git commit -m "Starting hackathon - $(date)"
-git push
-
-# 3. Build your project here
-# 4. Commit regularly (minimum 5 commits)
-```
-
-## 📤 Submission
-
-**Deadline**: Oct 5, 2025 at 12:00 CET
-
-**Submit at**: [https://forms.acta.so/r/wMobdM](https://forms.acta.so/r/wMobdM)
-
-**You need**:
-1. Public GitHub repo URL
-2. 60-second demo video (Loom/YouTube - must be public)
-3. Live demo URL (deployed app)
-4. Your email and name
-
-## ✅ Before Submitting
-
-```bash
-# Run verification
-node verify-submission.js
-```
-
-Check:
-- [ ] GitHub repo is public
-- [ ] 60s video is public and accessible
-- [ ] Live demo works in incognito window
-- [ ] Made 5+ commits during the 24 hours
-- [ ] README updated with project info
-
-## 🎬 Judging
-
-**Top 25 submissions** will be ranked 1-10 on each criterion:
-
-### Craft (1-10)
-Quality of execution, code quality, attention to detail, polish. Does it work smoothly? Is it well-built? A simple feature done exceptionally well scores higher than complex features done poorly.
-
-### Novelty (1-10)
-Originality and innovation. Is this a fresh take? Does it approach the problem differently? Bonus points for ideas that make judges think "why doesn't this exist yet?"
-
-### Utility (1-10)
-Practical usefulness and real-world value. Would people actually use this? Does it solve a genuine problem? Could this become a real product?
-
-### Taste (1-10)
-Design sensibility, user experience, aesthetic choices. Is it intuitive? Does it feel good to use? Great taste shows in the details - from UI design to interaction patterns to copy writing.
-
-**Final scores** are calculated by summing all four dimensions. Highest total wins.
-
-## 💡 Tips
-
-- Start simple, iterate
-- Commit often (proves authenticity)
-- Deploy early (Vercel, Netlify, Railway)
-- Record demo showing actual functionality
-- Read [RULES.md](./RULES.md) to avoid disqualification
-
-## 📞 Support
-
-- **Discord**: [Join](https://discord.gg/9KbH3f5M2a)
-- **Instagram**: [@acta.so](https://instagram.com/acta.so)
-- **Web**: [acta.so/hackathon](https://www.acta.so/hackathon)
+CatchFrame is a simple bug reporting tool that records a user's screen, so you can see exactly what went wrong. It's the easiest way to get bug reports that actually help you solve problems faster.
 
 ---
 
-**Good luck! 🎉**
+## Live Dashboard & Test Site
+
+🚀 [app.catchframe.app](https://app.catchframe.app)  
+🐛 [demo.catchframe.app](https://demo.catchframe.app)
+
+---
+
+## The Problem
+
+*"The button doesn't work."*  
+
+We've all gotten bug reports like this. They don't tell you what's really happening, so you waste hours asking questions, guessing the user's browser, and hoping you can see the bug for yourself.  
+
+It's a slow, frustrating process for everyone.
+
+---
+
+## The Solution: A Perfect Bug Report, Every Time
+
+CatchFrame makes bug reporting easy. Just add **one line of code** to your website.  
+
+When a user sees a bug, they click the CatchFrame widget and record their screen. You instantly get a complete report in your team's dashboard.
+
+With CatchFrame, you get:
+
+- A video of what the user did  
+- All the console logs and errors  
+- A list of any failed network requests  
+- Info about their browser and operating system  
+
+You'll understand the problem in **minutes, not days**.
+
+---
+
+## Key Features
+
+- **See What They See:** Get a screen recording with voice narration  
+- **Automatic Error Logging:** Captures all console errors and messages automatically  
+- **Easy Setup:** Just add a single `<script>` tag to your site  
+- **Real-Time Inbox:** New reports show up in your dashboard instantly  
+- **Built to Scale:** Uses a modern, serverless architecture on Google Cloud  
+
+---
+
+## How It's Built (Architecture)
+
+CatchFrame is built on a smart, **event-driven system**. It can handle many reports without slowing down. When a report comes in, it's quickly saved and a background job processes the video.
+
+![Architecture Diagram](https://github.com/noahediz/acta-hackathon-catchframe/blob/main/img/architecture.png)
+
+```mermaid
+graph TD
+    subgraph User's Browser
+        A[Buggy Website] -->|1. User records bug| B(CatchFrame Widget);
+        B -->|2. Sends report| C[api.catchframe.app];
+    end
+
+    subgraph Google Cloud
+        C -->|3. Saves video| D[GCS: Raw Uploads Bucket];
+        C -->|4. Creates report| E[Firestore (status: processing)];
+        C -->|5. Sends job message| F[Pub/Sub Topic];
+
+        F -->|6. Triggers worker| G[Processing Service (Go)];
+        G -->|7. Moves video| H[GCS: Processed Bucket];
+        G -->|8. Deletes original| D;
+        G -->|9. Updates report| E[Firestore (status: completed)];
+    end
+
+    subgraph Developer's Dashboard
+        I[app.catchframe.app] -->|10. Reads report data| E;
+        I -->|11. Plays video| H;
+    end
+
+    style A fill:#f8d7da,stroke:#721c24
+    style B fill:#d1ecf1,stroke:#0c5460
+    style I fill:#d4edda,stroke:#155724
