@@ -1,10 +1,13 @@
-# https://docs.docker.com/guides/golang/build-images/
-
-FROM golang:1.25-alpine
-RUN apt-get update && apt-get install -y ffmpeg
+FROM golang:1.25-alpine as builder
+RUN apk add --no-cache build-base ffmpeg
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
-COPY *.go ./
-RUN CGO_ENABLED=0 GOOS=linux go build -o /processing-service
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -o /processing-service .
+FROM gcr.io/distroless/base-debian12
+COPY --from=builder /processing-service /
+COPY --from=builder /usr/bin/ffmpeg /usr/bin/ffmpeg
+COPY --from=builder /lib /lib
+COPY --from=builder /usr/lib /usr/lib
 CMD ["/processing-service"]
