@@ -114,8 +114,10 @@ func ProcessingService(ctx context.Context, e cloudevents.Event) error {
 	log.Printf("Uploaded processed video to bucket %s", processedReportsBucket)
 
 	// Update the status in Firestore
+	processedVideoURL := fmt.Sprintf("https://storage.googleapis.com/%s/%s", processedReportsBucket, processedVideoFileName)
 	_, err = firestoreClient.Collection(reportsCollection).Doc(reportID).Update(ctx, []firestore.Update{
-		{Path: "status", Value: "downloaded"},
+		{Path: "status", Value: "completed"},
+		{Path: "processedVideoUrl", Value: processedVideoURL}, // Add the public URL
 	})
 	if err != nil {
 		log.Printf("Error updating firestore document %s: %v", reportID, err)
