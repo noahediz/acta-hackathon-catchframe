@@ -70,12 +70,6 @@ func ProcessingService(ctx context.Context, e cloudevents.Event) error {
 	}
 	log.Printf("Successfully copied %s to bucket %s", rawVideoFileName, processedReportsBucket)
 
-	// Make the new object in the processed bucket public.
-	acl := destObject.ACL()
-	if err := acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
-		return fmt.Errorf("failed to set public ACL on new object: %w", err)
-	}
-
 	// Delete the original object from the raw bucket.
 	if err := sourceObject.Delete(ctx); err != nil {
 		// Log the error but don't fail the function, as the copy succeeded.
