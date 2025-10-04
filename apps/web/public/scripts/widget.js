@@ -206,7 +206,7 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: flex-end;
-                gap: 0px;
+                gap: 4px;
                 overflow: hidden;
             }
 
