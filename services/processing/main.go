@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/exec"
 
 	"cloud.google.com/go/firestore"
 	"cloud.google.com/go/storage"
@@ -59,10 +60,13 @@ func ProcessingService(ctx context.Context, e cloudevents.Event) error {
 
 	// Define temporary file paths.
 	rawVideoFileName := reportID + ".webm"
+	processedVideoFileName := reportID + ".mp4"
 	localRawPath := "/tmp/" + rawVideoFileName
+	localProcessedPath := "/tmp/" + processedVideoFileName
 
 	// Delete temporary raw files
 	defer os.Remove(localRawPath)
+	defer os.Remove(localProcessedPath)
 
 	// Download raw video from GCS.
 	rawObject := storageClient.Bucket(rawUploadsBucketName).Object(rawVideoFileName)
@@ -82,6 +86,15 @@ func ProcessingService(ctx context.Context, e cloudevents.Event) error {
 		return fmt.Errorf("failed to copy GCS object to local file: %w", err)
 	}
 	log.Printf("Successfully downloaded raw video to %s", localRawPath)
+
+	// USe ffmpeg to compress and convert the video
+	cmd := exec.Command("ffmpeg", "-i", localRawPath, "-c:v", "copy", localProcessedPath)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Printf("ffmpeg command failed. Output: %s", string(output))
+		return fmt.Errorf("ffmpeg execution failed: %w", err)
+	}
+	log.Printf("Successfully converted video with ffmpeg.")
 
 	// Update the status in Firestore
 	_, err = firestoreClient.Collection(reportsCollection).Doc(reportID).Update(ctx, []firestore.Update{
