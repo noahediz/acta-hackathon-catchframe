@@ -4,10 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"os"
-	"os/exec"
 
 	"cloud.google.com/go/firestore"
 	"cloud.google.com/go/storage"
@@ -26,34 +24,29 @@ type PubSubMessage struct {
 }
 
 var (
-	firestoreClient        *firestore.Client
-	storageClient          *storage.Client
-	gcpProjectID           = os.Getenv("GOOGLE_CLOUD_PROJECT")
-	reportsCollection      = "reports"
-	rawUploadsBucketName   = "catchframe-raw-uploads"
-	processedReportsBucket = "catchframe-processed-reports"
+	firestoreClient *firestore.Client
+	storageClient   *storage.Client
+
+	gcpProjectID         = os.Getenv("GOOGLE_CLOUD_PROJECT")
+	reportsCollection    = "reports"
+	rawUploadsBucketName = "catchframe-raw-uploads"
 )
 
 func init() {
-	// Register the Pub/Sub-triggered function.
 	functions.CloudEvent("ProcessingService", ProcessingService)
-
 	ctx := context.Background()
 	var err error
-
 	firestoreClient, err = firestore.NewClient(ctx, gcpProjectID)
 	if err != nil {
 		log.Fatalf("Failed to create firestore client: %v", err)
 	}
-
-	// FIX: Initialize the storage client
 	storageClient, err = storage.NewClient(ctx)
 	if err != nil {
 		log.Fatalf("Failed to create storage client: %v", err)
 	}
 }
 
-// ProcessingService consumes a Pub/Sub message via a CloudEvent
+// ProcessingService consumes a Pub/Sub message and finalizes the report document.
 func ProcessingService(ctx context.Context, e cloudevents.Event) error {
 	var msg MessagePublishedData
 	if err := json.Unmarshal(e.Data(), &msg); err != nil {
@@ -62,75 +55,30 @@ func ProcessingService(ctx context.Context, e cloudevents.Event) error {
 	}
 
 	reportID := string(msg.Message.Data)
-	log.Printf("Received request to process report: %s", reportID)
+	log.Printf("Finalizing report: %s", reportID)
 
-	// Define temporary file paths.
 	rawVideoFileName := reportID + ".webm"
-	processedVideoFileName := reportID + ".mp4"
-	localRawPath := "/tmp/" + rawVideoFileName
-	localProcessedPath := "/tmp/" + processedVideoFileName
-
-	// Delete temporary raw files
-	defer os.Remove(localRawPath)
-	defer os.Remove(localProcessedPath)
-
-	// Download raw video from GCS
 	rawObject := storageClient.Bucket(rawUploadsBucketName).Object(rawVideoFileName)
-	rc, err := rawObject.NewReader(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to create GCS reader: %w", err)
-	}
-	defer rc.Close()
 
-	localFile, err := os.Create(localRawPath)
-	if err != nil {
-		return fmt.Errorf("failed to create local file: %w", err)
+	// Make the raw video file publicly readable.
+	acl := rawObject.ACL()
+	if err := acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
+		return fmt.Errorf("failed to set public ACL on raw video: %w", err)
 	}
-	defer localFile.Close()
 
-	if _, err := io.Copy(localFile, rc); err != nil {
-		return fmt.Errorf("failed to copy GCS object to local file: %w", err)
-	}
-	log.Printf("Successfully downloaded raw video to %s", localRawPath)
+	// The public URL is now the source of truth.
+	processedVideoURL := fmt.Sprintf("https://storage.googleapis.com/%s/%s", rawUploadsBucketName, rawVideoFileName)
 
-	// Use ffmpeg to compress and convert the video
-	// https://linux.die.net/man/1/ffmpeg
-	cmd := exec.Command("ffmpeg", "-i", localRawPath, "-c:v", "copy", localProcessedPath)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Printf("ffmpeg command failed. Output: %s", string(output))
-		return fmt.Errorf("ffmpeg execution failed: %w", err)
-	}
-	log.Printf("Successfully converted video with ffmpeg.")
-
-	// Upload processed video back to GCS
-	processedObject := storageClient.Bucket(processedReportsBucket).Object(processedVideoFileName)
-	wc := processedObject.NewWriter(ctx)
-	processedFile, err := os.Open(localProcessedPath)
-	if err != nil {
-		return fmt.Errorf("failed to open processed local file: %w", err)
-	}
-	defer processedFile.Close()
-	if _, err := io.Copy(wc, processedFile); err != nil {
-		return fmt.Errorf("failed to copy processed file to GCS: %w", err)
-	}
-	if err := wc.Close(); err != nil {
-		return fmt.Errorf("failed to finalize GCS upload: %w", err)
-	}
-	log.Printf("Uploaded processed video to bucket %s", processedReportsBucket)
-
-	// Update the status in Firestore
-	processedVideoURL := fmt.Sprintf("https://storage.googleapis.com/%s/%s", processedReportsBucket, processedVideoFileName)
-	_, err = firestoreClient.Collection(reportsCollection).Doc(reportID).Update(ctx, []firestore.Update{
+	// Update the Firestore document with the final status and the direct video URL.
+	_, err := firestoreClient.Collection(reportsCollection).Doc(reportID).Update(ctx, []firestore.Update{
 		{Path: "status", Value: "completed"},
-		{Path: "processedVideoUrl", Value: processedVideoURL}, // Add the public URL
+		{Path: "processedVideoUrl", Value: processedVideoURL},
 	})
 	if err != nil {
 		log.Printf("Error updating firestore document %s: %v", reportID, err)
 		return err
 	}
 
-	// FIX: Update the log message to be correct
-	log.Printf("Successfully processed report: %s. Status updated to 'completed'.", reportID)
+	log.Printf("Successfully finalized report: %s. Status updated to 'completed'.", reportID)
 	return nil
 }
