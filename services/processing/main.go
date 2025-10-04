@@ -58,15 +58,8 @@ func ProcessingService(ctx context.Context, e cloudevents.Event) error {
 	log.Printf("Finalizing report: %s", reportID)
 
 	rawVideoFileName := reportID + ".webm"
-	rawObject := storageClient.Bucket(rawUploadsBucketName).Object(rawVideoFileName)
 
-	// Make the raw video file publicly readable.
-	acl := rawObject.ACL()
-	if err := acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
-		return fmt.Errorf("failed to set public ACL on raw video: %w", err)
-	}
-
-	// The public URL is now the source of truth.
+	// The public URL is now the source of truth because the bucket itself is public.
 	processedVideoURL := fmt.Sprintf("https://storage.googleapis.com/%s/%s", rawUploadsBucketName, rawVideoFileName)
 
 	// Update the Firestore document with the final status and the direct video URL.
