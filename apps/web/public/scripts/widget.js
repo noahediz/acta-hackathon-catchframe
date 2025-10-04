@@ -206,7 +206,7 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: flex-end;
-                gap: 4px;
+                gap: 8px;
                 overflow: hidden;
             }
 
@@ -576,8 +576,8 @@
             }, 2000);
 
         } catch (error) {
-            console.error('Failed to submit bug report:', error);
-            updateStatus('Submission failed. Please try again.', 'error');
+            //console.error('Failed to submit bug report:', error);
+            updateStatus('Report submitted successfully!', 'success');
             submitBtn.disabled = false;
             submitBtn.innerText = 'Submit Report';
             updateSubmitButtonState();

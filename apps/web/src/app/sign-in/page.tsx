@@ -8,7 +8,7 @@ export default function SignInPage() {
 
 
   return (
-    <div className="flex min-h-screen items-center light:bg-muted justify-center p-6">
+    <div className="flex min-h-screen items-center bg-slate-100 dark:bg-slate-900 justify-center p-6">
       <div className="w-full max-w-sm rounded-xl bg-white dark:bg-black border p-6 space-y-6">
         <ThemedLogo width={160} height={100} />
         
