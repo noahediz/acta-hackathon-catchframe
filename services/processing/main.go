@@ -45,6 +45,12 @@ func init() {
 	if err != nil {
 		log.Fatalf("Failed to create firestore client: %v", err)
 	}
+
+	// FIX: Initialize the storage client
+	storageClient, err = storage.NewClient(ctx)
+	if err != nil {
+		log.Fatalf("Failed to create storage client: %v", err)
+	}
 }
 
 // ProcessingService consumes a Pub/Sub message via a CloudEvent
@@ -124,6 +130,7 @@ func ProcessingService(ctx context.Context, e cloudevents.Event) error {
 		return err
 	}
 
-	log.Printf("Report %s status updated to 'downloaded'.", reportID)
+	// FIX: Update the log message to be correct
+	log.Printf("Successfully processed report: %s. Status updated to 'completed'.", reportID)
 	return nil
 }
