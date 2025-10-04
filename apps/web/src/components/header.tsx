@@ -30,7 +30,7 @@ const Header = () => {
       <ThemedLogo width={120}/>
       
               <DropdownMenu>
-                <DropdownMenuTrigger>
+                <DropdownMenuTrigger asChild>
                   <Button variant="ghost">
                     <Avatar className="size-6 rounded-md">
                         <AvatarImage src={session?.user?.image || ''} />

@@ -21,13 +21,14 @@ export const PATCH = auth(async function PATCH(
     try {
         
         const { status } = await req.json();
-
+        console.log("id", id)
+        console.log("status", status)
         if (!id || !status) {
             return NextResponse.json({ error: "Report ID and status are required" }, { status: 400 });
         }
         
         // Ensure status is one of the allowed values
-        const allowedStatus = ["new", "processing", "completed/fixed"];
+        const allowedStatus = ["new", "processing", "completed", "pending"];
         if (!allowedStatus.includes(status)) {
             return NextResponse.json({ error: "Invalid status value" }, { status: 400 });
         }

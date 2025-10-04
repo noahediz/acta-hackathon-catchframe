@@ -5,9 +5,10 @@ export type Report = {
   description: string
   metadata: string
   processedVideoUrl?: string
-  status: "pending" | "processing" | "completed" | "fixed"
-  timestamp: {
-    seconds: number
-    nanoseconds: number
-  }
+  status: "pending" | "processing" | "completed" | "new"
+  timestamp: FirestoreTimestamp
 }
+
+export type FirestoreTimestamp =
+  | { seconds: number; nanoseconds: number }
+  | { _seconds: number; _nanoseconds: number }
