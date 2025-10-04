@@ -17,8 +17,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { useSession } from "next-auth/react"
 import { usePathname } from "next/navigation"
+import { useState } from "react"
+import { ProfileDialog } from "./profile-dialog"
 
-// Menu items.
 const items = [
   {
     title: "Dashboard",
@@ -49,6 +50,7 @@ export function AppSidebar() {
     const { data: session } = useSession()
     const initials = getInitials(session?.user?.name);
     const pathname = usePathname()
+    const [isProfileDialogOpen, setIsProfileDialogOpen] = useState<boolean>(false)
 
   return (
     <Sidebar collapsible='icon'>
@@ -93,15 +95,19 @@ export function AppSidebar() {
                   className="w-[--radix-popper-anchor-width]"
                 >
                   <DropdownMenuItem>
-                    <span>Account</span>
+                    <span>Profile</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <span>Billing</span>
+                  <DropdownMenuItem onClick={() => setIsProfileDialogOpen(!isProfileDialogOpen)}>
+                    <span>Profile</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <span>Sign out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
+                <ProfileDialog 
+                    isOpen={isProfileDialogOpen}
+                    onClose={() => setIsProfileDialogOpen(!isProfileDialogOpen)}
+                />
               </DropdownMenu>
             </SidebarMenuItem>
           </SidebarMenu>
