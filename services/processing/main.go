@@ -15,12 +15,12 @@ import (
 	cloudevents "github.com/cloudevents/sdk-go/v2"
 )
 
-// MessagePublishedData contains the data from a Pub/Sub event.
+// MessagePublishedData contains the data from a Pub/Sub event
 type MessagePublishedData struct {
 	Message PubSubMessage `json:"message"`
 }
 
-// PubSubMessage is the payload of a Pub/Sub event.
+// PubSubMessage is the payload of a Pub/Sub event
 type PubSubMessage struct {
 	Data []byte `json:"data"`
 }
@@ -30,8 +30,8 @@ var (
 	storageClient          *storage.Client
 	gcpProjectID           = os.Getenv("GOOGLE_CLOUD_PROJECT")
 	reportsCollection      = "reports"
-	rawUploadsBucketName   = "catchframe-raw-uploads"       // NEW: Name of the input bucket
-	processedReportsBucket = "catchframe-processed-reports" // NEW: Name of the output bucket
+	rawUploadsBucketName   = "catchframe-raw-uploads"
+	processedReportsBucket = "catchframe-processed-reports"
 )
 
 func init() {
@@ -47,7 +47,7 @@ func init() {
 	}
 }
 
-// ProcessingService consumes a Pub/Sub message via a CloudEvent.
+// ProcessingService consumes a Pub/Sub message via a CloudEvent
 func ProcessingService(ctx context.Context, e cloudevents.Event) error {
 	var msg MessagePublishedData
 	if err := json.Unmarshal(e.Data(), &msg); err != nil {
@@ -68,7 +68,7 @@ func ProcessingService(ctx context.Context, e cloudevents.Event) error {
 	defer os.Remove(localRawPath)
 	defer os.Remove(localProcessedPath)
 
-	// Download raw video from GCS.
+	// Download raw video from GCS
 	rawObject := storageClient.Bucket(rawUploadsBucketName).Object(rawVideoFileName)
 	rc, err := rawObject.NewReader(ctx)
 	if err != nil {
@@ -87,7 +87,8 @@ func ProcessingService(ctx context.Context, e cloudevents.Event) error {
 	}
 	log.Printf("Successfully downloaded raw video to %s", localRawPath)
 
-	// USe ffmpeg to compress and convert the video
+	// Use ffmpeg to compress and convert the video
+	// https://linux.die.net/man/1/ffmpeg
 	cmd := exec.Command("ffmpeg", "-i", localRawPath, "-c:v", "copy", localProcessedPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -95,6 +96,22 @@ func ProcessingService(ctx context.Context, e cloudevents.Event) error {
 		return fmt.Errorf("ffmpeg execution failed: %w", err)
 	}
 	log.Printf("Successfully converted video with ffmpeg.")
+
+	// Upload processed video back to GCS
+	processedObject := storageClient.Bucket(processedReportsBucket).Object(processedVideoFileName)
+	wc := processedObject.NewWriter(ctx)
+	processedFile, err := os.Open(localProcessedPath)
+	if err != nil {
+		return fmt.Errorf("failed to open processed local file: %w", err)
+	}
+	defer processedFile.Close()
+	if _, err := io.Copy(wc, processedFile); err != nil {
+		return fmt.Errorf("failed to copy processed file to GCS: %w", err)
+	}
+	if err := wc.Close(); err != nil {
+		return fmt.Errorf("failed to finalize GCS upload: %w", err)
+	}
+	log.Printf("Uploaded processed video to bucket %s", processedReportsBucket)
 
 	// Update the status in Firestore
 	_, err = firestoreClient.Collection(reportsCollection).Doc(reportID).Update(ctx, []firestore.Update{
