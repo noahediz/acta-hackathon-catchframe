@@ -61,6 +61,9 @@ type Report struct {
 	Description string    `firestore:"description"`
 	ConsoleLogs string    `firestore:"consoleLogs"`
 	Metadata    string    `firestore:"metadata"`
+	// MODIFICATION: Added Email field with 'omitempty' tag.
+	// This ensures it's only stored in Firestore if the string is not empty.
+	Email string `firestore:"email,omitempty"`
 }
 
 func ingestionHandler(w http.ResponseWriter, r *http.Request) {
@@ -91,6 +94,9 @@ func ingestionHandler(w http.ResponseWriter, r *http.Request) {
 	description := r.FormValue("description")
 	consoleLogsJSON := r.FormValue("consoleLogs")
 	metadataJSON := r.FormValue("metadata")
+	// MODIFICATION: Get the optional email from the form.
+	// If 'email' is not present, this will return an empty string "".
+	email := r.FormValue("email")
 
 	// Log recevied data
 	log.Printf("Received file: %s", header.Filename)
@@ -98,6 +104,9 @@ func ingestionHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Description: %s", description)
 	log.Printf("consoleLogsJSON: %s", consoleLogsJSON)
 	log.Printf("metadataJSON: %s", metadataJSON)
+	if email != "" {
+		log.Printf("Email: %s", email)
+	}
 
 	// Generate a unique ID for this report. This is the primary key
 	reportID := uuid.New().String()
@@ -128,6 +137,7 @@ func ingestionHandler(w http.ResponseWriter, r *http.Request) {
 		Description: description,
 		ConsoleLogs: consoleLogsJSON,
 		Metadata:    metadataJSON,
+		Email:       email,
 	}
 
 	// Create new firebase document
