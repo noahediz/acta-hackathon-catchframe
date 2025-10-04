@@ -1,1 +1,1 @@
-The Go ingestion service
+The Go ingestion service: Handles raw requests and creates event in Google Pub/Sub
