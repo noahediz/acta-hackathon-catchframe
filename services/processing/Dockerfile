@@ -17,6 +17,9 @@ COPY . .
 # FIX: Explicitly set the target architecture to amd64 for cloud compatibility.
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /processing-service .
 
+# Make the binary executable here, in the builder stage, which has a shell.
+RUN chmod +x /processing-service
+
 # ---
 
 # Stage 2: The "Showroom" - Create the final, minimal production image.
@@ -24,7 +27,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /processing-service .
 FROM gcr.io/distroless/base-debian11
 
 # Copy the compiled Go binary from the 'builder' stage and set execute permissions.
-COPY --from=builder --chmod=0755 /processing-service /
+COPY --from=builder /processing-service /
 
 # Copy the ffmpeg binary itself from the 'builder' stage.
 COPY --from=builder /usr/bin/ffmpeg /usr/bin/ffmpeg
