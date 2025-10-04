@@ -56,29 +56,3 @@ CatchFrame is built on a smart, **event-driven system**. It can handle many repo
 
 ![Architecture Diagram](https://github.com/noahediz/acta-hackathon-catchframe/blob/main/img/architecture.png)
 
-```mermaid
-graph TD
-    subgraph User's Browser
-        A[Buggy Website] -->|1. User records bug| B(CatchFrame Widget);
-        B -->|2. Sends report| C[api.catchframe.app];
-    end
-
-    subgraph Google Cloud
-        C -->|3. Saves video| D[GCS: Raw Uploads Bucket];
-        C -->|4. Creates report| E[Firestore (status: processing)];
-        C -->|5. Sends job message| F[Pub/Sub Topic];
-
-        F -->|6. Triggers worker| G[Processing Service (Go)];
-        G -->|7. Moves video| H[GCS: Processed Bucket];
-        G -->|8. Deletes original| D;
-        G -->|9. Updates report| E[Firestore (status: completed)];
-    end
-
-    subgraph Developer's Dashboard
-        I[app.catchframe.app] -->|10. Reads report data| E;
-        I -->|11. Plays video| H;
-    end
-
-    style A fill:#f8d7da,stroke:#721c24
-    style B fill:#d1ecf1,stroke:#0c5460
-    style I fill:#d4edda,stroke:#155724
