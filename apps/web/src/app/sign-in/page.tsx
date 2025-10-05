@@ -30,7 +30,7 @@ export default function SignInPage() {
             Sign in with GitHub
           </Button>
           <p className="text-xs text-muted-foreground text-center">
-            For Acta Team: Authenticate with your GitHub Account
+            For the Acta Team: Sign in with your GitHub account. No user data is stored permanently.
           </p>
         </div>        
       </div>
