@@ -1,26 +1,26 @@
-# CatchFrame
+# CatchFrame: Bug reporting tool
 
-**Stop guessing what's wrong. Start fixing it.**
+![Logo](https://app.catchframe.app/_next/image?url=%2Flogo.png&w=128&q=75)
 
-CatchFrame is a simple bug reporting tool that records a user's screen, so you can see exactly what went wrong. It's the easiest way to get bug reports that actually help you solve problems faster.
+CatchFrame is a simple bug reporting tool that records a user's screen, so you can see exactly what went wrong. It's the easiest way to get bug reports that actually help you solve problems faster. Just embed a static javascript on all your pages and the user is able to report a bug instantly: ``<script src="https://app.catchframe.app/scripts/widget.js" defer></script>``
 
-## Live Dashboard & Test Site
 
-🚀 [app.catchframe.app](https://app.catchframe.app)  
-🐛 [demo.catchframe.app](https://demo.catchframe.app)
-
+LIVE: [app.catchframe.app](https://app.catchframe.app)  
+DEMO: [demo.catchframe.app](https://demo.catchframe.app) simple broken page where user reports a bug
 
 ## The Problem
 
 *"The button doesn't work."*  
 
-We've all gotten bug reports like this. They don't tell you what's really happening, so you waste hours asking questions, guessing the user's browser, and hoping you can see the bug for yourself.  
+We've all gotten bug reports like this. They don't tell you what's really happening, so you waste hours asking questions, guessing the user's browser, and hoping you can see the bug for yourself.
 
-It's a slow, frustrating process for everyone.
+It's a slow, frustrating process for everyone. Also on BETA system we don't really have a good feedback loop. It would be very helpful and timesaving if users directly can submit a bug. User saves time and the developer headach.
 
-## The Solution: A Perfect Bug Report, Every Time
+## The Solution
 
-CatchFrame makes bug reporting easy. Just add **one line of code** to your website.  
+Why does the user not just record the problem and you receive all information, like console logs, metadata, network traffic?
+
+CatchFrame makes bug reporting easy. Just add **one line of code** to your website.
 
 When a user sees a bug, they click the CatchFrame widget and record their screen. You instantly get a complete report in your team's dashboard.
 
@@ -33,10 +33,4 @@ With CatchFrame, you get:
 
 You'll understand the problem in **minutes, not days**.
 
-## How It's Built (Architecture)
 
-CatchFrame is built on a smart, **event-driven system**. It can handle many reports without slowing down. When a report comes in, it's quickly saved and a background job processes the video.
-
-![Architecture Diagram](https://github.com/noahediz/acta-hackathon-catchframe/blob/main/img/architecture.png)
-
-## Contribute

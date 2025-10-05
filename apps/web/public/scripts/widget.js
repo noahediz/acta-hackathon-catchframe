@@ -6,7 +6,7 @@
  * It captures console logs, network requests, and user-provided descriptions along with a screen recording.
  *
  * How to use:
- * <script src="path/to/this/widget.js" defer></script>
+ * <script src="https://app.catchframe.app/scripts/widget.js" defer></script>
  *
  */
 (function() {
