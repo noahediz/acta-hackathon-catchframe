@@ -1,7 +1,7 @@
 
 ![Logo](https://app.catchframe.app/_next/image?url=%2Flogo.png&w=128&q=75)
 
-**CatchFrame: Bug Reporting Tool**
+# CatchFrame: Bug Reporting Tool
 
 CatchFrame is a simple bug reporting tool that records a user's screen, so you can see exactly what went wrong.  It’s the easiest way to get bug reports that actually help you solve problems faster.
 
