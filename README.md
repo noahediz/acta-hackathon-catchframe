@@ -23,7 +23,7 @@ Just add **one line of code** to your website, and let your users show you the p
 > “I can’t see anything.”
 
 Every developer knows the pain of vague bug reports like these.  
-They don’t tell you what’s really happening — so you waste hours asking follow-up questions, guessing browsers, and trying to reproduce bugs.
+They don’t tell you what’s really happening. So you waste hours asking follow-up questions, guessing browsers, and trying to reproduce bugs.
 
 This **breaks the feedback loop**, especially during beta testing, turning a simple fix into a slow, frustrating process.
 
@@ -58,18 +58,18 @@ Each service handles a specific task, communicating asynchronously through event
 ### The Services
 
 #### Ingestion Service (Go)
-Handles all incoming bug reports.  
-It saves raw data instantly and queues background jobs for processing — all within milliseconds.
+Handles all incoming bug reports.
+It saves raw data instantly and queues background jobs for processing, all within milliseconds.
 
 #### Processing Service (Go)
-Processes reports asynchronously — uploading videos, preparing them for viewing, and enriching report data.
+Processes reports asynchronously, uploading videos, preparing them for viewing, and enriching report data.
 
 #### Admin UI (Next.js)
 The control center.  
 Developers can log in via GitHub, view incoming reports, and track their status.
 
 #### Demo Website (Next.js)
-A playground with intentionally broken buttons — perfect for demonstrating how CatchFrame works.
+A playground with intentionally broken buttons, perfect for demonstrating how CatchFrame works.
 
 ---
 
@@ -110,10 +110,10 @@ The widget will appear automatically, and users can start sending perfect bug re
 CatchFrame is just getting started.  
 Here’s what’s coming next:
 
-- 💬 **Slack & Teams Integration** — Get bug reports directly in your team’s chat.  
-- 🤖 **AI-Powered Summaries** — Let AI analyze logs and suggest likely causes.  
-- 🧾 **Jira & Linear Integration** — Auto-create tickets with full bug context.  
-- 👥 **Team Collaboration Tools** — Assign reports, leave comments, and track progress.
+- 💬 **Slack & Teams Integration**: Get bug reports directly in your team’s chat.  
+- 🤖 **AI-Powered Summaries**: Let AI analyze logs and suggest likely causes.  
+- 🧾 **Jira & Linear Integration**: Auto-create tickets with full bug context.  
+- 👥 **Team Collaboration Tools**: Assign reports, leave comments, and track progress.
 
 ---
 
