@@ -33,7 +33,7 @@ export function getColumns({ onStatusChange, onDelete }: ColumnOptions): ColumnD
         const seconds =
           "seconds" in timestamp ? timestamp.seconds : timestamp._seconds
         const date = new Date(seconds * 1000).toLocaleString()
-        return <div className="font-medium w-12">{date}</div>
+        return <div className="font-medium w-12 min-w-[140px]">{date}</div>
       },
       // Add this sorting function
       sortingFn: (rowA, rowB) => {
@@ -58,7 +58,7 @@ export function getColumns({ onStatusChange, onDelete }: ColumnOptions): ColumnD
           completed: { label: "Completed", className: "bg-green-500/20 dark:bg-green-800/40 text-green-600" }
         }
         const config = statusConfig[status as keyof typeof statusConfig] || { label: status, className: "" }
-        return <div ><Badge className={config.className}>{config.label}</Badge></div>
+        return <div className="min-w-[120px]"><Badge className={config.className}>{config.label}</Badge></div>
       },
     },    
     {
