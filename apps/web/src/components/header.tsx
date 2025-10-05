@@ -27,7 +27,7 @@ const Header = () => {
   const { setTheme } = useTheme()
 
   return (
-    <div className='w-full fixed bg-white py-4 px-6 border-b flex justify-between items-center top-5'>
+    <div className='w-full fixed bg-white dark:bg-sidebar-accent py-4 px-6 border-b flex justify-between items-center sm:top-5 top-15'>
             <Link href="/reports">
               <ThemedLogo width={120}/>
             </Link>      

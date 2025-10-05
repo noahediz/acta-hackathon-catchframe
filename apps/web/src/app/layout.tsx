@@ -4,6 +4,7 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "@/components/theme-provider";
 import DemoAnnouncement from "@/components/demo-announcement";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({
           <SessionProvider>
             <DemoAnnouncement />
             {children}
+            <Toaster />
           </SessionProvider>   
         </ThemeProvider>
       </body>

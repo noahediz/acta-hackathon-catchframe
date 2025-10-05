@@ -65,7 +65,7 @@ export function getColumns({ onStatusChange, onDelete }: ColumnOptions): ColumnD
       accessorKey: "description",
       header: "Description",
       cell: ({ row }) => (
-        <div className="truncate">
+        <div className="truncate lg:max-w-full max-w-[300px]">
           {row.getValue("description") as string}
         </div>
       ),
