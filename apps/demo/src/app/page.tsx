@@ -87,7 +87,7 @@ export default function BuggyDemoPage() {
               <div className='space-y-2'>
                 <CardTitle className='text-lg'>Buggy Dashboard</CardTitle>
                 <CardDescription>
-                  This page is designed to fail. Test the CatchFrame widget.
+                  This page is designed to fail. Test the CatchFrame widget on right bottom corner.
                 </CardDescription>
               </div>
           </CardHeader>

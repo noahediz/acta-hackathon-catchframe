@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "verify": "node verify-submission.js",
-    "start": "cd apps/web && pnpm run dev",
+    "start:web": "cd apps/web && pnpm run dev",
+    "start:demo": "cd apps/demo && pnpm run dev",
     "test": "cd apps/web && pnpm run dev"
   },
   "keywords": [

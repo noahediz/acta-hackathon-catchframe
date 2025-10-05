@@ -16,7 +16,7 @@ export default async function Layout({
       <main className="w-full">
         <Header />
         {/**<SidebarTrigger /> */}
-        <div className="p-6 w-full flex flex-col gap-4">
+        <div className="p-6 w-full pt-28 flex flex-col gap-4">
           {children}
         </div>
       </main>

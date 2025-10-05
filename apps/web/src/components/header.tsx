@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { useTheme } from "next-themes"
 import { Button } from './ui/button'
 import { ChevronUp, LogOut, Monitor, Moon, Sun, User } from "lucide-react"
+import Link from 'next/link'
 
 function getInitials(name?: string | null): string {
   if (!name) return "";
@@ -26,9 +27,10 @@ const Header = () => {
   const { setTheme } = useTheme()
 
   return (
-    <div className='w-full py-4 px-6 border-b flex justify-between items-center'>
-      <ThemedLogo width={120}/>
-      
+    <div className='w-full fixed bg-white py-4 px-6 border-b flex justify-between items-center top-5'>
+            <Link href="/reports">
+              <ThemedLogo width={120}/>
+            </Link>      
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost">

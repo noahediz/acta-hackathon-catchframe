@@ -1,73 +1,127 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { getReportById } from '@/utils/getReportById';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism"
 
-export default async function ReportDetailPage({ params }: { params: { id: string } }) {
-    const report = await getReportById(params.id);
+// Define a type for the page props for better clarity
+type ReportDetailPageProps = {
+  params: { id: string };
+};
 
+// Define the structure of a single console log entry
+type ConsoleLog = {
+  level: 'error' | 'info' | 'warn' | 'log';
+  timestamp: number;
+  message: string;
+};
+
+export default async function ReportDetailPage({ params }: ReportDetailPageProps) {
+  const report = await getReportById(params.id);
+
+  // If the report is not found, you should handle that case
+  if (!report) {
+    return <div>Report not found.</div>;
+  }
+
+  // Limit description to 30 characters
+  const limitedDescription = report.description.length > 30
+    ? report.description.slice(0, 30) + "..."
+    : report.description;
+
+  // Type the parsed console logs array
+  const jsonconsolelogs: ConsoleLog[] = report.consoleLogs ? JSON.parse(report.consoleLogs) : [];
+
+  const Metadata = () => {
+    // Use 'unknown' for safer JSON parsing
+    const jsonResponse: unknown = JSON.parse(report.metadata);
+    const prettyJson = JSON.stringify(jsonResponse, null, 2);
     return (
-        <div className="container mx-auto p-4">
-            <Card>
-                <CardHeader>
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <CardTitle>Bug Report Details</CardTitle>
-                            <CardDescription>ID: {report.id}</CardDescription>
-                        </div>
-                        <Badge variant={report.status === 'processing' ? 'default' : 'secondary'}>
-                            {report.status}
-                        </Badge>
-                    </div>
-                </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {/* Left side: Video Player */}
-                    <div>
-                        <h3 className="font-semibold mb-2">Screen Recording</h3>
-                        {report.processedVideoUrl ? (
-                            <video
-                                src={report.processedVideoUrl}
-                                controls
-                                className="w-full rounded-lg border bg-black"
-                                preload="metadata"
-                            >
-                                Your browser does not support the video tag.
-                            </video>
-                        ) : (
-                            <div className="w-full aspect-video flex items-center justify-center rounded-lg border bg-gray-100">
-                                <p className="text-gray-500">Video not available.</p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Right side: Report Details */}
-                    <div className="space-y-4">
-                        <div>
-                            <h3 className="font-semibold">Description</h3>
-                            <p className="text-sm text-gray-700 p-3 bg-gray-50 rounded-md border">{report.description || 'No description provided.'}</p>
-                        </div>
-                        <div>
-                            <h3 className="font-semibold">Timestamp</h3>
-                            <p className="text-sm">{new Date(report.timestamp.seconds * 1000).toLocaleString()}</p>
-                        </div>
-                        <div>
-                            <h3 className="font-semibold">Submitter Email</h3>
-                            <p className="text-sm">{report.email || 'Not provided'}</p>
-                        </div>
-                        <div>
-                            <h3 className="font-semibold">Console Logs</h3>
-                            <pre className="text-xs text-gray-800 p-3 bg-gray-900 text-white rounded-md max-h-48 overflow-auto">
-                                <code>{JSON.stringify(JSON.parse(report.consoleLogs), null, 2)}</code>
-                            </pre>
-                        </div>
-                        <div>
-                            <h3 className="font-semibold">Metadata</h3>
-                            <pre className="text-xs p-3 bg-gray-100 rounded-md border max-h-48 overflow-auto">
-                                <code>{JSON.stringify(JSON.parse(report.metadata), null, 2)}</code>
-                            </pre>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
+      <SyntaxHighlighter
+        language="json"
+        style={vscDarkPlus}
+        customStyle={{
+          overflow: "auto",
+          fontSize: "0.875rem",
+          borderRadius: "0.375rem",
+          width: "100%",
+          maxHeight: "60vh"
+        }}
+      >
+        {prettyJson}
+      </SyntaxHighlighter>
     );
+  };
+
+  return (
+    <div className='w-full flex flex-col gap-6'>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/reports">All Records</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{limitedDescription}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
+      <div className='space-y-2'>
+        <h1 className='font-semibold text-2xl'>Report Details</h1>
+      </div>
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+        <div className='space-y-6 bg-card p-6 rounded-lg border'>
+          <div>
+            <p className='text-sm text-muted-foreground'>Description</p>
+            <p className='font-medium'>{report.description}</p>
+          </div>
+          <div>
+            <p className='text-sm text-muted-foreground'>E-Mail</p>
+            <p>{report.email || 'Not provided'}</p>
+          </div>
+          <div>
+            <p className='text-sm text-muted-foreground'>Timestamp</p>
+            {/* Ensure timestamp exists before calling toDate() */}
+            <p>{report.timestamp ? report.timestamp.toDate().toLocaleString() : 'No date'}</p>
+          </div>
+          {report.processedVideoUrl && (
+            <div>
+              <p className='text-sm text-muted-foreground'>Screen Recording</p>
+              <video controls className="w-full max-w-[460px] rounded-md border mt-1">
+                <source src={report.processedVideoUrl} type="video/webm" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          )}
+        </div>
+
+        <div className='space-y-4'>
+          <div className='bg-card p-6 rounded-lg border'>
+            <p className='text-sm text-muted-foreground mb-2'>Metadata</p>
+            <Metadata />
+          </div>
+          <div className='bg-card p-6 rounded-lg border'>
+            <p className='text-sm text-muted-foreground mb-2'>Console Logs</p>
+            <div className='space-y-1 max-h-[60vh] overflow-y-auto'>
+              {jsonconsolelogs.length > 0 ? jsonconsolelogs.map((log, idx) => (
+                <p
+                  key={idx}
+                  className={`font-mono ${log.level === "error" ? "text-red-500" : "text-foreground"} bg-muted border p-2 text-xs rounded`}
+                >
+                  [{new Date(log.timestamp).toLocaleTimeString()}] {log.level.toUpperCase()}: {log.message}
+                </p>
+              )) : <p className='text-sm text-muted-foreground'>No console logs recorded.</p>}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

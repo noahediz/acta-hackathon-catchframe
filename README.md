@@ -4,14 +4,11 @@
 
 CatchFrame is a simple bug reporting tool that records a user's screen, so you can see exactly what went wrong. It's the easiest way to get bug reports that actually help you solve problems faster.
 
----
-
 ## Live Dashboard & Test Site
 
 🚀 [app.catchframe.app](https://app.catchframe.app)  
 🐛 [demo.catchframe.app](https://demo.catchframe.app)
 
----
 
 ## The Problem
 
@@ -20,8 +17,6 @@ CatchFrame is a simple bug reporting tool that records a user's screen, so you c
 We've all gotten bug reports like this. They don't tell you what's really happening, so you waste hours asking questions, guessing the user's browser, and hoping you can see the bug for yourself.  
 
 It's a slow, frustrating process for everyone.
-
----
 
 ## The Solution: A Perfect Bug Report, Every Time
 
@@ -38,21 +33,10 @@ With CatchFrame, you get:
 
 You'll understand the problem in **minutes, not days**.
 
----
-
-## Key Features
-
-- **See What They See:** Get a screen recording with voice narration  
-- **Automatic Error Logging:** Captures all console errors and messages automatically  
-- **Easy Setup:** Just add a single `<script>` tag to your site  
-- **Real-Time Inbox:** New reports show up in your dashboard instantly  
-- **Built to Scale:** Uses a modern, serverless architecture on Google Cloud  
-
----
-
 ## How It's Built (Architecture)
 
 CatchFrame is built on a smart, **event-driven system**. It can handle many reports without slowing down. When a report comes in, it's quickly saved and a background job processes the video.
 
 ![Architecture Diagram](https://github.com/noahediz/acta-hackathon-catchframe/blob/main/img/architecture.png)
 
+## Contribute

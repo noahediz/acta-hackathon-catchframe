@@ -35,6 +35,16 @@ export function getColumns({ onStatusChange, onDelete }: ColumnOptions): ColumnD
         const date = new Date(seconds * 1000).toLocaleString()
         return <div className="font-medium w-12">{date}</div>
       },
+      // Add this sorting function
+      sortingFn: (rowA, rowB) => {
+        const tsA = rowA.original.timestamp
+        const tsB = rowB.original.timestamp
+        const secondsA = "seconds" in tsA ? tsA.seconds : tsA._seconds
+        const secondsB = "seconds" in tsB ? tsB.seconds : tsB._seconds
+        
+        // Compare the numerical seconds for accurate sorting
+        return secondsA - secondsB
+      },
     },
     {
       accessorKey: "status",
