@@ -53,7 +53,7 @@ Understand the problem in **minutes, not days**.
 CatchFrame runs on a **microservices architecture** for speed, scalability, and reliability. It uses Knative and is event driven.
 Each service handles a specific task, communicating asynchronously through events.
 
-![Architecture Diagram](https://github.com/noahediz/acta-hackathon-catchframe/blob/main/img/architecture.png)
+![Architecture Diagram](./img/architecture.png)  
 
 ### The Services
 
@@ -107,13 +107,12 @@ The widget will appear automatically, and users can start sending perfect bug re
 
 ## 🚀 The Future (Roadmap)
 
-CatchFrame is just getting started.  
-Here’s what’s coming next:
+Here are some ideas what could be integrated and added in future.
 
-- 💬 **Slack & Teams Integration**: Get bug reports directly in your team’s chat.  
-- 🤖 **AI-Powered Summaries**: Let AI analyze logs and suggest likely causes.  
-- 🧾 **Jira & Linear Integration**: Auto-create tickets with full bug context.  
-- 👥 **Team Collaboration Tools**: Assign reports, leave comments, and track progress.
+- **Slack & Teams Integration**: Get bug reports directly in your team’s chat.  
+- **AI-Powered Summaries**: Let AI analyze logs and suggest likely causes.  
+- **Jira & Linear Integration**: Auto-create tickets with full bug context.  
+- **Team Collaboration Tools**: Assign reports, leave comments, and track progress.
 
 ---
 
@@ -148,3 +147,8 @@ pnpm start:demo
 cd services/ingestion   # or services/processing
 go run main.go
 ```
+
+---
+
+![Dashboard Screenshot Placeholder](./img/screenshot-reports-page.png)  
+![Demo Site Screenshot Placeholder](./img/screenshot-demo.png)  
